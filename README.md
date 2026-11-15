@@ -34,7 +34,7 @@ O **EchoScan32** é um projeto de sistema embarcado de controle de radar autôno
 
 O projeto foi totalmente projetado e validado no simulador online **Wokwi**.
 
-🔗 **[Clique aqui para abrir a simulação interativa no Wokwi](SEU_LINK_DO_WOKWI_AQUI)**
+🔗 **[Clique aqui para abrir a simulação interativa no Wokwi](https://wokwi.com/projects/480318188618456065)**
 
 > *Dica: Insira um GIF ou imagem da sua simulação rodando nesta seção para tornar o repositório ainda mais visual!*
 
