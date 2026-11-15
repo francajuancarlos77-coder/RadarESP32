@@ -1,0 +1,70 @@
+#include <ESP32Servo.h>
+
+// Definição dos Pinos de Hardware
+#define PIN_TRIG 5
+#define PIN_ECHO 18
+#define PIN_SERVO 19
+#define PIN_BUZZER 21
+#define PIN_LED 2
+
+Servo radarServo;
+
+// Função para medir distância com o sensor ultrassônico (em cm)
+float lerDistancia() {
+  digitalWrite(PIN_TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);
+  
+  long duracao = pulseIn(PIN_ECHO, HIGH, 30000); // Timeout de 30ms
+  if (duracao == 0) return 400.0; // Sem obstáculo no alcance
+  return duracao * 0.0343 / 2.0;
+}
+
+void processarVarredura(int angulo) {
+  radarServo.write(angulo);
+  delay(150); // Tempo para o servo mover e estabilizar
+  
+  float distancia = lerDistancia();
+  
+  // Exibição dos dados no Monitor Serial
+  Serial.print("Angulo: ");
+  Serial.print(angulo);
+  Serial.print(" deg | Distancia: ");
+  Serial.print(distancia);
+  Serial.println(" cm");
+  
+  // Alerta de proximidade (obstáculo a menos de 20 cm)
+  if (distancia < 20.0) {
+    digitalWrite(PIN_LED, HIGH);
+    tone(PIN_BUZZER, 1000, 100);
+  } else {
+    digitalWrite(PIN_LED, LOW);
+    noTone(PIN_BUZZER);
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
+  pinMode(PIN_BUZZER, OUTPUT);
+  pinMode(PIN_LED, OUTPUT);
+  
+  radarServo.attach(PIN_SERVO);
+  Serial.println("--- Radar Ultrassônico Iniciado ---");
+}
+
+void loop() {
+  // Varredura de 0 a 180 graus
+  for (int angulo = 0; angulo <= 180; angulo += 15) {
+    processarVarredura(angulo);
+  }
+  
+  // Varredura de retorno de 180 a 0 graus
+  for (int angulo = 180; angulo >= 0; angulo -= 15) {
+    processarVarredura(angulo);
+  }
+}
